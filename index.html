@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101827">
+  <title>رقميّات | دليل توافق الشاشات</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#"><span class="brand-mark">ر</span><span><b>رَقميّات</b><small>دليل توافق الشاشات والزقات</small></span></a>
+    <div class="top-actions"><span class="status-dot"></span><span>قاعدة البيانات المحلية</span></div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="hero-copy">
+        <span class="eyebrow">أداة فنيّ الصيانة</span>
+        <h1>اعرف الشاشة المطابقة<br><em>قبل التركيب</em></h1>
+        <p>ابحث باسم الجهاز أو رقم الشاشة، واكتشف الأجهزة المتوافقة معها بسرعة.</p>
+      </div>
+      <div class="hero-art" aria-hidden="true"><div class="phone"><div class="phone-screen"><span></span><span></span><span></span></div></div><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div></div>
+    </section>
+
+    <section class="search-panel panel">
+      <div class="section-heading"><div><span class="eyebrow">بحث سريع</span><h2>ما نوع الشاشة أو الجهاز؟</h2></div><span class="search-icon">⌕</span></div>
+      <div class="search-wrap"><span>⌕</span><input id="searchInput" type="search" placeholder="مثال: Samsung A12 أو شاشة A125 أو رقم القطعة..." autocomplete="off"><button id="clearSearch" class="clear-btn" type="button">مسح</button></div>
+      <div class="filters">
+        <button class="filter active" data-filter="all">الكل</button>
+        <button class="filter" data-filter="device">البحث عن جهاز</button>
+        <button class="filter" data-filter="screen">البحث عن شاشة</button>
+      </div>
+      <div id="resultsMeta" class="results-meta">ابدأ بكتابة اسم الجهاز أو رقم الشاشة</div>
+      <div id="results" class="results empty-state"><div class="empty-icon">⌕</div><b>نتائج التوافق ستظهر هنا</b><span>جرّب البحث باسم موديل الهاتف أو كود الشاشة</span></div>
+    </section>
+
+    <section class="stats">
+      <div class="stat panel"><span class="stat-icon">▣</span><div><b id="deviceCount">0</b><small>موديلات أجهزة</small></div></div>
+      <div class="stat panel"><span class="stat-icon">▤</span><div><b id="screenCount">0</b><small>أنواع شاشات</small></div></div>
+      <div class="stat panel"><span class="stat-icon">↔</span><div><b id="compatCount">0</b><small>علاقات توافق</small></div></div>
+    </section>
+
+    <section class="catalog panel">
+      <div class="section-heading"><div><span class="eyebrow">إدارة الكتالوج</span><h2>إضافة توافق جديد</h2><p class="sub">أدخل بيانات القطعة والأجهزة التي تركب عليها.</p></div><button id="toggleForm" class="primary-btn">＋ إضافة شاشة</button></div>
+      <form id="addForm" class="add-form hidden">
+        <div class="form-grid">
+          <label>اسم / كود الشاشة<input name="screen" required placeholder="مثال: A125 / شاشة A12"></label>
+          <label>الشركة<input name="brand" placeholder="Samsung / Xiaomi..."></label>
+          <label class="full">الأجهزة المتوافقة <small>افصل بين كل موديل بفاصلة</small><input name="devices" required placeholder="Galaxy A12, Galaxy A125, SM-A125F"></label>
+          <label class="full">ملاحظات التركيب (اختياري)<textarea name="notes" rows="2" placeholder="مثال: تأكد من شكل الفلاتة والإصدار قبل التركيب"></textarea></label>
+        </div>
+        <div class="form-actions"><button class="primary-btn" type="submit">حفظ في الكتالوج</button><button id="cancelForm" class="secondary-btn" type="button">إلغاء</button></div>
+      </form>
+      <div class="catalog-actions"><button id="exportBtn" class="secondary-btn">↓ تصدير نسخة احتياطية</button><label class="secondary-btn import-label">↑ استيراد قاعدة بيانات<input id="importInput" type="file" accept="application/json"></label><button id="resetBtn" class="danger-btn">إعادة البيانات التجريبية</button></div>
+    </section>
+    <footer>رقميّات © <span id="year"></span> <span>•</span> تأكد من رقم القطعة وشكل الفلاتة قبل التركيب، فالتوافق قد يختلف حسب إصدار الجهاز.</footer>
+  </main>
+  <div id="toast" class="toast" role="status"></div>
+  <script src="app.js"></script>
+</body>
+</html>
