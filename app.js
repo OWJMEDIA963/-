@@ -1,41 +1,141 @@
-const starterData = [
- {id:1,screen:"A125 / A12",brand:"Samsung",devices:["Samsung Galaxy A12","Samsung Galaxy A125","SM-A125F"],notes:"بيانات تجريبية للتوضيح فقط؛ طابق شكل الفلاتة ورقم القطعة قبل التركيب."},
- {id:2,screen:"A105 / A10",brand:"Samsung",devices:["Samsung Galaxy A10","Samsung Galaxy A105","SM-A105F"],notes:"تأكد من نسخة الشاشة والفريم."},
- {id:3,screen:"Redmi 9A",brand:"Xiaomi",devices:["Xiaomi Redmi 9A","Xiaomi Redmi 9AT"],notes:"تحقق من شكل الكونكتور قبل التركيب."},
- {id:4,screen:"iPhone 11",brand:"Apple",devices:["Apple iPhone 11","iPhone 11 A2221","iPhone 11 A2111"],notes:"توجد أنواع جودة مختلفة؛ التوافق هنا حسب الموديل."},
- {id:5,screen:"A205 / A20",brand:"Samsung",devices:["Samsung Galaxy A20","Samsung Galaxy A205","SM-A205F"],notes:"لا تعتمد على الاسم التجاري وحده."},
- {id:6,screen:"Poco X3 NFC",brand:"Xiaomi",devices:["Xiaomi Poco X3 NFC","Xiaomi Poco X3"],notes:"افحص رقم الإصدار وشكل الفلاتة."}
-];
-let catalog = loadData();
-let activeFilter = "all";
-const $ = s => document.querySelector(s);
-function loadData(){try{const x=JSON.parse(localStorage.getItem("raqmiCatalog"));return Array.isArray(x)?x:starterData.slice()}catch{return starterData.slice()}}
-function save(){localStorage.setItem("raqmiCatalog",JSON.stringify(catalog));renderStats()}
-function norm(s){return String(s||"").toLowerCase().replace(/[أإآ]/g,"ا").replace(/[ىي]/g,"ي").replace(/[\s\-_./]/g,"")}
-function renderStats(){const devices=new Set(catalog.flatMap(x=>x.devices.map(norm)));$("#deviceCount").textContent=devices.size;$("#screenCount").textContent=catalog.length;$("#compatCount").textContent=catalog.reduce((n,x)=>n+x.devices.length,0)}
-function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-function render(){
- const q=$("#searchInput").value.trim(), nq=norm(q);let matches=[];
- if(q){matches=catalog.map(item=>{const deviceHit=item.devices.some(d=>norm(d).includes(nq)||nq.includes(norm(d)));const screenHit=norm(item.screen).includes(nq)||nq.includes(norm(item.screen));const brandHit=norm(item.brand).includes(nq);let score=(deviceHit?3:0)+(screenHit?4:0)+(brandHit?1:0);return {...item,score,deviceHit,screenHit}}).filter(x=>x.score>0);
- if(activeFilter==="device")matches=matches.filter(x=>x.deviceHit);
- if(activeFilter==="screen")matches=matches.filter(x=>x.screenHit);
- matches.sort((a,b)=>b.score-a.score);
- }
- $("#resultsMeta").textContent=q?`تم العثور على ${matches.length} نتيجة مطابقة`:"ابدأ بكتابة اسم الجهاز أو رقم الشاشة";
- const root=$("#results");root.classList.toggle("empty-state",!q||!matches.length);
- if(!q){root.innerHTML='<div class="empty-icon">⌕</div><b>نتائج التوافق ستظهر هنا</b><span>جرّب البحث باسم موديل الهاتف أو كود الشاشة</span>';return}
- if(!matches.length){root.innerHTML='<div class="empty-icon">⌕</div><b>لا توجد نتيجة في الكتالوج</b><span>يمكنك إضافة الشاشة والأجهزة المتوافقة من قسم إدارة الكتالوج</span>';return}
- root.innerHTML=matches.map(x=>`<article class="result-card"><div class="result-top"><div><h3>${escapeHtml(x.screen)}</h3><span class="muted">${escapeHtml(x.brand||"شركة غير محددة")}</span></div><span class="tag">شاشة مطابقة</span></div><div class="compat-list">${x.devices.map(d=>`<span class="device-chip">${escapeHtml(d)}</span>`).join("")}</div>${x.notes?`<div class="notes">${escapeHtml(x.notes)}</div>`:""}<div style="display:flex;justify-content:flex-end;margin-top:9px"><button class="delete-btn" data-delete="${x.id}">حذف من الكتالوج</button></div></article>`).join("");
- root.querySelectorAll("[data-delete]").forEach(b=>b.addEventListener("click",()=>{if(confirm("هل تريد حذف هذه الشاشة من الكتالوج؟")){catalog=catalog.filter(x=>x.id!==Number(b.dataset.delete));save();render();toast("تم حذف البيانات")}}));
+const $ = (s) => document.querySelector(s);
+let supabaseClient, currentUser, isAdmin=false, parts=[], activeFilter="all", partsChannel=null;
+
+function showToast(message){const t=$("#toast");t.textContent=message;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2600)}
+function norm(s){return String(s||"").toLowerCase().replace(/[أإآ]/g,"ا").replace(/[ىي]/g,"ي").replace(/[\s\-_.\/]/g,"")}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function setLoggedIn(user,admin){
+  currentUser=user;isAdmin=admin;
+  subscribeToParts();
+  $("#loginView").classList.add("hidden");$("#appView").classList.remove("hidden");
+  $("#headerUser").classList.remove("hidden");
+  $("#headerUser").innerHTML=`<span>${esc(user.email)}</span><button id="logoutBtn" class="secondary-btn">تسجيل خروج</button>`;
+  $("#logoutBtn").onclick=logout;
+  $("#adminPanel").classList.toggle("hidden",!admin);
 }
-function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2200)}
-$("#searchInput").addEventListener("input",render);
-$("#clearSearch").addEventListener("click",()=>{$("#searchInput").value="";render();$("#searchInput").focus()});
-document.querySelectorAll(".filter").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll(".filter").forEach(x=>x.classList.remove("active"));b.classList.add("active");activeFilter=b.dataset.filter;render()}));
-$("#toggleForm").addEventListener("click",()=>{$("#addForm").classList.toggle("hidden");$("#toggleForm").textContent=$("#addForm").classList.contains("hidden")?"＋ إضافة شاشة":"إخفاء النموذج"});
-$("#cancelForm").addEventListener("click",()=>{$("#addForm").reset();$("#addForm").classList.add("hidden");$("#toggleForm").textContent="＋ إضافة شاشة"});
-$("#addForm").addEventListener("submit",e=>{e.preventDefault();const fd=new FormData(e.target);const devices=String(fd.get("devices")).split(",").map(x=>x.trim()).filter(Boolean);if(!devices.length)return;catalog.unshift({id:Date.now(),screen:String(fd.get("screen")).trim(),brand:String(fd.get("brand")).trim(),devices,notes:String(fd.get("notes")).trim()});save();e.target.reset();e.target.classList.add("hidden");$("#toggleForm").textContent="＋ إضافة شاشة";render();toast("تمت إضافة الشاشة والتوافق بنجاح")});
-$("#exportBtn").addEventListener("click",()=>{const blob=new Blob([JSON.stringify(catalog,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="raqmi-screens-backup.json";a.click();URL.revokeObjectURL(a.href);toast("تم تصدير النسخة الاحتياطية")});
-$("#importInput").addEventListener("change",async e=>{const file=e.target.files[0];if(!file)return;try{const data=JSON.parse(await file.text());if(!Array.isArray(data)||!data.every(x=>x.screen&&Array.isArray(x.devices)))throw Error();catalog=data.map((x,i)=>({...x,id:Number(x.id)||Date.now()+i}));save();render();toast("تم استيراد قاعدة البيانات")}catch{alert("الملف غير صالح. اختر نسخة احتياطية صادرة من الموقع.")}e.target.value=""});
-$("#resetBtn").addEventListener("click",()=>{if(confirm("سيتم استبدال بياناتك الحالية بالبيانات التجريبية. هل أنت متأكد؟")){catalog=starterData.map(x=>({...x}));save();render();toast("تمت إعادة البيانات التجريبية")}});
-$("#year").textContent=new Date().getFullYear();renderStats();render();
+function setLoggedOut(){
+  currentUser=null;isAdmin=false;
+  $("#appView").classList.add("hidden");$("#loginView").classList.remove("hidden");
+  $("#headerUser").classList.add("hidden");$("#adminPanel").classList.add("hidden");
+}
+async function getRole(userId){
+  const {data,error}=await supabaseClient.from("profiles").select("role,display_name").eq("id",userId).single();
+  if(error) throw error;
+  return data;
+}
+async function login(e){
+  e.preventDefault();$("#loginError").textContent="";
+  const email=$("#loginEmail").value.trim(),password=$("#loginPassword").value;
+  const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});
+  if(error){$("#loginError").textContent="بيانات الدخول غير صحيحة أو الحساب غير مفعّل.";return}
+  try{
+    const profile=await getRole(data.user.id);
+    setLoggedIn(data.user,profile.role==="admin");
+    await loadParts();
+  }catch(err){await supabaseClient.auth.signOut();setLoggedOut();$("#loginError").textContent="تعذر التحقق من صلاحيات الحساب. تواصل مع المدير."}
+}
+async function logout(){
+  if(partsChannel){await supabaseClient.removeChannel(partsChannel);partsChannel=null;}
+  await supabaseClient.auth.signOut();parts=[];setLoggedOut()
+}
+function subscribeToParts(){
+  if(!supabaseClient || !currentUser) return;
+  if(partsChannel) supabaseClient.removeChannel(partsChannel);
+  partsChannel=supabaseClient.channel("parts-live-sync")
+    .on("postgres_changes",{event:"*",schema:"public",table:"parts"},()=>loadParts())
+    .subscribe();
+}
+async function loadParts(){
+  $("#resultsMeta").textContent="جاري تحميل البيانات...";
+  const {data,error}=await supabaseClient.from("parts").select("*").order("created_at",{ascending:false});
+  if(error){$("#resultsMeta").textContent="تعذر تحميل قاعدة البيانات.";console.error(error);return}
+  parts=data||[];render();
+}
+function render(){
+  const q=norm($("#searchInput").value);
+  let found=parts.filter(p=>{
+    const text=[p.name,p.brand,p.notes,...(p.devices||[])].map(norm).join(" ");
+    const typeOk=activeFilter==="all"||p.part_type===activeFilter;
+    return typeOk&&(!q||text.includes(q));
+  });
+  $("#resultsMeta").textContent=q?`عدد النتائج: ${found.length}`:`إجمالي القطع المسجلة: ${parts.length}`;
+  $("#deviceCount").textContent=new Set(parts.flatMap(p=>p.devices||[]).map(norm)).size;
+  $("#screenCount").textContent=parts.length;
+  $("#compatCount").textContent=parts.reduce((n,p)=>n+(p.devices||[]).length,0);
+  const root=$("#results");
+  if(!found.length){root.innerHTML='<div class="empty">لا توجد نتائج. جرّب كلمة بحث أخرى.</div>';return}
+  root.innerHTML=found.map(p=>`<article class="result-card">
+    <div class="result-top"><div><span class="tag">${p.part_type==="screen"?"شاشة":"زقة / حماية"}</span><h3>${esc(p.name)}</h3><span class="muted">${esc(p.brand||"شركة غير محددة")}</span></div>
+    ${isAdmin?`<div class="card-actions"><button class="tiny-btn" data-edit="${p.id}">تعديل</button><button class="tiny-btn danger" data-delete="${p.id}">حذف</button></div>`:""}
+    </div>
+    <strong>الأجهزة المتوافقة</strong><div class="chips">${(p.devices||[]).map(d=>`<span class="chip">${esc(d)}</span>`).join("")}</div>
+    ${p.notes?`<p class="notes">${esc(p.notes)}</p>`:""}
+  </article>`).join("");
+  if(isAdmin){
+    root.querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>editPart(b.dataset.edit));
+    root.querySelectorAll("[data-delete]").forEach(b=>b.onclick=()=>deletePart(b.dataset.delete));
+  }
+}
+function resetPartForm(){
+  $("#partForm").reset();$("#partId").value="";$("#cancelEdit").classList.add("hidden");
+}
+function editPart(id){
+  const p=parts.find(x=>String(x.id)===String(id));if(!p)return;
+  $("#partId").value=p.id;$("#partType").value=p.part_type;$("#partBrand").value=p.brand||"";
+  $("#partName").value=p.name;$("#partDevices").value=(p.devices||[]).join(", ");$("#partNotes").value=p.notes||"";
+  $("#cancelEdit").classList.remove("hidden");$("#partForm").scrollIntoView({behavior:"smooth"});
+}
+async function savePart(e){
+  e.preventDefault();if(!isAdmin)return;
+  const id=$("#partId").value;
+  const payload={part_type:$("#partType").value,brand:$("#partBrand").value.trim(),name:$("#partName").value.trim(),
+    devices:$("#partDevices").value.split(",").map(x=>x.trim()).filter(Boolean),notes:$("#partNotes").value.trim()};
+  let result;
+  if(id) result=await supabaseClient.from("parts").update(payload).eq("id",id);
+  else result=await supabaseClient.from("parts").insert(payload);
+  if(result.error){showToast("تعذر حفظ القطعة: "+result.error.message);return}
+  resetPartForm();await loadParts();showToast("تم حفظ البيانات ومزامنتها");
+}
+async function deletePart(id){
+  if(!confirm("هل تريد حذف هذه القطعة نهائياً؟"))return;
+  const {error}=await supabaseClient.from("parts").delete().eq("id",id);
+  if(error){showToast("تعذر الحذف: "+error.message);return}
+  await loadParts();showToast("تم حذف القطعة");
+}
+async function createEmployee(e){
+  e.preventDefault();if(!isAdmin)return;
+  $("#employeeMessage").textContent="جاري إنشاء الحساب...";
+  const {data:{session}}=await supabaseClient.auth.getSession();
+  const {data,error}=await supabaseClient.functions.invoke("admin-create-user",{
+    body:{email:$("#employeeEmail").value.trim(),password:$("#employeePassword").value,display_name:$("#employeeName").value.trim()},
+    headers:{Authorization:`Bearer ${session.access_token}`}
+  });
+  if(error){$("#employeeMessage").textContent="فشل إنشاء الحساب: "+error.message;return}
+  $("#employeeForm").reset();$("#employeeMessage").textContent="تم إنشاء حساب الموظف بنجاح.";
+}
+async function init(){
+  $("#year").textContent=new Date().getFullYear();
+  $("#loginForm").addEventListener("submit",login);
+  $("#searchInput").addEventListener("input",render);
+  $("#clearSearch").onclick=()=>{$("#searchInput").value="";render()};
+  document.querySelectorAll(".filter").forEach(b=>b.onclick=()=>{
+    document.querySelectorAll(".filter").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");activeFilter=b.dataset.filter;render();
+  });
+  $("#partForm").addEventListener("submit",savePart);
+  $("#cancelEdit").onclick=resetPartForm;
+  $("#employeeForm").addEventListener("submit",createEmployee);
+  if(!window.supabase||!window.SUPABASE_URL||window.SUPABASE_URL.includes("ضع_")||!window.SUPABASE_ANON_KEY||window.SUPABASE_ANON_KEY.includes("ضع_")){
+    $("#loginError").textContent="يجب إعداد رابط ومفتاح Supabase داخل ملف config.js أولاً.";return;
+  }
+  supabaseClient=window.supabase.createClient(window.SUPABASE_URL,window.SUPABASE_ANON_KEY);
+  const {data:{session}}=await supabaseClient.auth.getSession();
+  if(session){
+    try{const profile=await getRole(session.user.id);setLoggedIn(session.user,profile.role==="admin");await loadParts()}
+    catch{await supabaseClient.auth.signOut();setLoggedOut()}
+  }
+  supabaseClient.auth.onAuthStateChange(async(event,session)=>{
+    if(event==="SIGNED_OUT")setLoggedOut();
+  });
+}
+init();
