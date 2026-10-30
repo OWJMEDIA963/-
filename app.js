@@ -65,10 +65,10 @@ function render(){
   const root=$("#results");
   if(!found.length){root.innerHTML='<div class="empty">لا توجد نتائج. جرّب كلمة بحث أخرى.</div>';return}
   root.innerHTML=found.map(p=>`<article class="result-card">
-    <div class="result-top"><div class="result-title"><span class="tag">${p.part_type==="screen"?"شاشة بديلة":"زقة / حماية"}</span><span class="replacement-label">${p.part_type==="screen"?"اسم الشاشة البديلة":"اسم الزقة / الحماية"}</span><h3>${esc(p.name)}</h3><span class="muted">${esc(p.brand||"شركة غير محددة")}</span></div>
+    <div class="result-top"><div><span class="tag">${p.part_type==="screen"?"الشاشة البديلة":"الزقة / الحماية"}</span><h3>${p.part_type==="screen"?"الشاشة البديلة: ":"اسم الزقة: "}${esc(p.name)}</h3><span class="muted">${esc(p.brand||"شركة غير محددة")}</span></div>
     ${isAdmin?`<div class="card-actions"><button class="tiny-btn" data-edit="${p.id}">تعديل</button><button class="tiny-btn danger" data-delete="${p.id}">حذف</button></div>`:""}
     </div>
-    <div class="compat-label">الأجهزة المتوافقة</div><div class="chips">${(Array.isArray(p.devices)?p.devices:[p.devices||""]).flatMap(d=>String(d).split(/\s*--+\s*|\s*[,،;؛\n]+\s*/).map(x=>x.trim()).filter(Boolean)).map(d=>`<span class="chip">${esc(d)}</span>`).join("")}</div>
+    <strong>الأجهزة المتوافقة</strong><div class="chips">${(p.devices||[]).map(d=>`<span class="chip">${esc(d)}</span>`).join("")}</div>
     ${p.notes?`<p class="notes">${esc(p.notes)}</p>`:""}
   </article>`).join("");
   if(isAdmin){
