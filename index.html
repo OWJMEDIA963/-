@@ -9,16 +9,19 @@
 </head>
 <body>
 <header class="topbar">
-  <a class="brand" href="#"><span class="brand-mark">ر</span><span><b>رَقميّات</b><small>دليل توافق الشاشات والزقات</small></span></a>
+  <a class="brand" href="#" aria-label="رقميات - الصفحة الرئيسية">
+    <img class="brand-logo" src="logo-raqmiat.png" alt="شعار رقميات">
+    <span><b>رقميات</b><small>دليل الشاشات البديلة والزقات</small></span>
+  </a>
   <div id="headerUser" class="header-user hidden"></div>
 </header>
 <main class="container">
   <section id="loginView" class="login-wrap">
     <div class="login-card">
-      <div class="login-icon">ر</div>
-      <span class="eyebrow">منصة الصيانة</span>
+      <img class="login-logo" src="logo-raqmiat.png" alt="شعار رقميات">
+      <span class="eyebrow">نظام رقميات للصيانة</span>
       <h1>تسجيل الدخول</h1>
-      <p class="muted">الدخول للحسابات التي أنشأها مدير رقميات فقط.</p>
+      <p class="muted">أدخل بريدك الإلكتروني وكلمة المرور للدخول كمدير أو موظف. الحسابات ينشئها المدير فقط.</p>
       <form id="loginForm">
         <label>البريد الإلكتروني<input id="loginEmail" type="email" autocomplete="username" required placeholder="name@example.com"></label>
         <label>كلمة المرور<input id="loginPassword" type="password" autocomplete="current-password" required placeholder="كلمة المرور"></label>
@@ -36,7 +39,7 @@
     </section>
 
     <section class="panel search-panel">
-      <div class="section-heading"><div><span class="eyebrow">بحث سريع</span><h2>ابحث في قاعدة البيانات</h2></div></div>
+      <div class="section-heading"><div><span class="eyebrow">بحث سريع</span><h2>ابحث عن الشاشة البديلة أو الزقة</h2><p class="muted">اكتب موديل الهاتف أو كود الشاشة لتظهر لك القطع المطابقة.</p></div></div>
       <div class="search-wrap"><span>⌕</span><input id="searchInput" type="search" placeholder="مثال: Samsung A12 أو A125 أو كود الزقة..."><button id="clearSearch" class="secondary-btn">مسح</button></div>
       <div class="filters">
         <button class="filter active" data-filter="all">الكل</button>
@@ -60,8 +63,8 @@
         <div class="form-grid">
           <label>نوع القطعة<select id="partType"><option value="screen">شاشة</option><option value="protector">زقة / حماية</option></select></label>
           <label>الشركة<input id="partBrand" placeholder="Samsung / Xiaomi..."></label>
-          <label class="full">اسم أو كود القطعة<input id="partName" required placeholder="مثال: A125 / شاشة A12"></label>
-          <label class="full">الأجهزة المتوافقة<input id="partDevices" required placeholder="افصل بين الموديلات بفاصلة"></label>
+          <label class="full" id="partNameLabel">اسم الشاشة البديلة / كود الشاشة<input id="partName" required placeholder="مثال: شاشة بديلة A12 / كود A125"></label>
+          <label class="full">موديلات الأجهزة التي تركب عليها<input id="partDevices" required placeholder="اكتب موديلات الأجهزة وافصل بينها بفاصلة"></label>
           <label class="full">ملاحظات التركيب<textarea id="partNotes" rows="2" placeholder="ملاحظات اختيارية"></textarea></label>
         </div>
         <div class="form-actions"><button class="primary-btn" type="submit">حفظ القطعة</button><button id="cancelEdit" class="secondary-btn hidden" type="button">إلغاء التعديل</button></div>

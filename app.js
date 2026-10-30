@@ -65,7 +65,7 @@ function render(){
   const root=$("#results");
   if(!found.length){root.innerHTML='<div class="empty">لا توجد نتائج. جرّب كلمة بحث أخرى.</div>';return}
   root.innerHTML=found.map(p=>`<article class="result-card">
-    <div class="result-top"><div><span class="tag">${p.part_type==="screen"?"شاشة":"زقة / حماية"}</span><h3>${esc(p.name)}</h3><span class="muted">${esc(p.brand||"شركة غير محددة")}</span></div>
+    <div class="result-top"><div><span class="tag">${p.part_type==="screen"?"الشاشة البديلة":"الزقة / الحماية"}</span><h3>${p.part_type==="screen"?"الشاشة البديلة: ":"اسم الزقة: "}${esc(p.name)}</h3><span class="muted">${esc(p.brand||"شركة غير محددة")}</span></div>
     ${isAdmin?`<div class="card-actions"><button class="tiny-btn" data-edit="${p.id}">تعديل</button><button class="tiny-btn danger" data-delete="${p.id}">حذف</button></div>`:""}
     </div>
     <strong>الأجهزة المتوافقة</strong><div class="chips">${(p.devices||[]).map(d=>`<span class="chip">${esc(d)}</span>`).join("")}</div>
@@ -123,6 +123,11 @@ async function init(){
     b.classList.add("active");activeFilter=b.dataset.filter;render();
   });
   $("#partForm").addEventListener("submit",savePart);
+  $("#partType").addEventListener("change",()=>{
+    const screen=$("#partType").value==="screen";
+    $("#partNameLabel").firstChild.textContent=screen?"اسم الشاشة البديلة / كود الشاشة":"اسم الزقة / كود الحماية";
+    $("#partName").placeholder=screen?"مثال: شاشة بديلة A12 / كود A125":"مثال: زقة A12 / كود الحماية";
+  });
   $("#cancelEdit").onclick=resetPartForm;
   $("#employeeForm").addEventListener("submit",createEmployee);
   if(!window.supabase||!window.SUPABASE_URL||window.SUPABASE_URL.includes("ضع_")||!window.SUPABASE_ANON_KEY||window.SUPABASE_ANON_KEY.includes("ضع_")){

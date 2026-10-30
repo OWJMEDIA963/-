@@ -34,11 +34,14 @@ supabase secrets set SUPABASE_URL=... SUPABASE_ANON_KEY=... SUPABASE_SERVICE_ROL
 
 الجزء الخامس: GitHub Pages
 ارفع محتويات هذا المجلد إلى جذر مستودع GitHub:
-index.html, style.css, app.js, config.js
+index.html, style.css, app.js, config.js, logo-raqmiat.png
 (يمكنك أيضاً رفع مجلد supabase وملفات الشرح للاحتفاظ بها في المستودع)
 ثم Settings > Pages > Deploy from a branch > main > /(root) > Save.
 
 طريقة العمل:
+- صفحة تسجيل الدخول موجودة عند فتح الموقع، ولا يوجد إنشاء حساب ذاتي.
+- شعار رقميات مضاف في أعلى الموقع وصفحة الدخول.
+- اسم الشاشة يظهر بوضوح بعبارة «الشاشة البديلة» في نتائج البحث ونموذج الإضافة.
 - المدير الأول يسجل الدخول بالحساب الذي أنشأته يدوياً.
 - المدير ينشئ الموظفين من قسم إدارة الحسابات.
 - الموظف يسجل الدخول ويبحث فقط.
