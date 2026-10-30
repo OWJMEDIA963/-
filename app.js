@@ -68,7 +68,7 @@ function render(){
     <div class="result-top"><div class="result-title"><span class="tag">${p.part_type==="screen"?"شاشة بديلة":"زقة / حماية"}</span><span class="replacement-label">${p.part_type==="screen"?"اسم الشاشة البديلة":"اسم الزقة / الحماية"}</span><h3>${esc(p.name)}</h3><span class="muted">${esc(p.brand||"شركة غير محددة")}</span></div>
     ${isAdmin?`<div class="card-actions"><button class="tiny-btn" data-edit="${p.id}">تعديل</button><button class="tiny-btn danger" data-delete="${p.id}">حذف</button></div>`:""}
     </div>
-    <div class="compat-label">الأجهزة المتوافقة</div><div class="chips">${(Array.isArray(p.devices)?p.devices:String(p.devices||"").split(/\s*(?:--|[,،;؛\n])\s*/)).flatMap(d=>String(d).split(/\s*(?:--|[,،;؛\n])\s*/).map(x=>x.trim()).filter(Boolean)).map(d=>`<span class="chip">${esc(d)}</span>`).join("")}</div>
+    <div class="compat-label">الأجهزة المتوافقة</div><div class="chips">${(Array.isArray(p.devices)?p.devices:[p.devices||""]).flatMap(d=>String(d).split(/\s*--+\s*|\s*[,،;؛\n]+\s*/).map(x=>x.trim()).filter(Boolean)).map(d=>`<span class="chip">${esc(d)}</span>`).join("")}</div>
     ${p.notes?`<p class="notes">${esc(p.notes)}</p>`:""}
   </article>`).join("");
   if(isAdmin){
