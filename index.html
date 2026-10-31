@@ -1,92 +1,28 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0b1220">
-<title>رقميات | دليل الشاشات والزقات</title>
-<link rel="stylesheet" href="style.css">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#fff8f1">
+<meta name="description" content="دليل رقميات للشاشات البديلة والزقات المتوافقة للهواتف">
+<title>رقميات | دليل القطع البديلة</title><link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header class="topbar">
-  <a class="brand" href="#" aria-label="رقميات - الصفحة الرئيسية">
-    <img class="brand-logo" src="logo-raqmiat.png" alt="شعار رقميات">
-    <span><b>رقميات</b><small>دليل الشاشات البديلة والزقات</small></span>
-  </a>
-  <div id="headerUser" class="header-user hidden"></div>
-</header>
+<header class="topbar"><a class="brand" href="#" aria-label="رقميات"><img class="brand-logo" src="logo-raqmiat.png" alt="شعار رقميات"><span><b>رقميات</b><small>دليل الشاشات البديلة والزقات</small></span></a><div id="headerUser" class="header-user hidden"></div></header>
 <main class="container">
-  <section id="loginView" class="login-wrap">
-    <div class="login-card">
-      <img class="login-logo" src="logo-raqmiat.png" alt="شعار رقميات">
-      <span class="eyebrow">نظام رقميات للصيانة</span>
-      <h1>تسجيل الدخول</h1>
-      <p class="muted">أدخل بريدك الإلكتروني وكلمة المرور للدخول كمدير أو موظف. الحسابات ينشئها المدير فقط.</p>
-      <form id="loginForm">
-        <label>البريد الإلكتروني<input id="loginEmail" type="email" autocomplete="username" required placeholder="name@example.com"></label>
-        <label>كلمة المرور<input id="loginPassword" type="password" autocomplete="current-password" required placeholder="كلمة المرور"></label>
-        <button class="primary-btn block" type="submit">دخول إلى الموقع</button>
-        <p id="loginError" class="error"></p>
-      </form>
-    </div>
-  </section>
-
-  <section id="appView" class="hidden">
-    <section class="hero">
-      <div><span class="eyebrow">أداة فني الصيانة</span><h1>اعرف القطعة المطابقة<br><em>قبل التركيب</em></h1>
-      <p>ابحث باسم الجهاز أو كود الشاشة أو الزقة واعرف الأجهزة المتوافقة.</p></div>
-      <div class="hero-art"><div class="phone"><div class="phone-screen"></div></div></div>
-    </section>
-
-    <section class="panel search-panel">
-      <div class="section-heading"><div><span class="eyebrow">بحث سريع</span><h2>ابحث عن الشاشة البديلة أو الزقة</h2><p class="muted">اكتب موديل الهاتف أو كود الشاشة لتظهر لك القطع المطابقة.</p></div></div>
-      <div class="search-wrap"><span>⌕</span><input id="searchInput" type="search" placeholder="مثال: Samsung A12 أو A125 أو كود الزقة..."><button id="clearSearch" class="secondary-btn">مسح</button></div>
-      <div class="filters">
-        <button class="filter active" data-filter="all">الكل</button>
-        <button class="filter" data-filter="screen">الشاشات</button>
-        <button class="filter" data-filter="protector">الزقات</button>
-      </div>
-      <div id="resultsMeta" class="results-meta">جاري تحميل قاعدة البيانات...</div>
-      <div id="results" class="results"><div class="empty">سجّل الدخول لعرض البيانات.</div></div>
-    </section>
-
-    <section class="stats">
-      <div class="stat panel"><span class="stat-icon">▣</span><div><b id="deviceCount">0</b><small>موديلات أجهزة</small></div></div>
-      <div class="stat panel"><span class="stat-icon">▤</span><div><b id="screenCount">0</b><small>قطع مسجلة</small></div></div>
-      <div class="stat panel"><span class="stat-icon">↔</span><div><b id="compatCount">0</b><small>علاقات توافق</small></div></div>
-    </section>
-
-    <section id="adminPanel" class="panel admin-panel hidden">
-      <div class="section-heading"><div><span class="eyebrow">إدارة المدير</span><h2>إدارة قاعدة البيانات</h2><p class="muted">هذه الأدوات تظهر للمدير فقط.</p></div></div>
-      <form id="partForm">
-        <input id="partId" type="hidden">
-        <div class="form-grid">
-          <label>نوع القطعة<select id="partType"><option value="screen">شاشة</option><option value="protector">زقة / حماية</option></select></label>
-          <label>الشركة<input id="partBrand" placeholder="Samsung / Xiaomi..."></label>
-          <label class="full" id="partNameLabel">اسم الشاشة البديلة / كود الشاشة<input id="partName" required placeholder="مثال: شاشة بديلة A12 / كود A125"></label>
-          <label class="full">موديلات الأجهزة التي تركب عليها<input id="partDevices" required placeholder="اكتب موديلات الأجهزة وافصل بينها بفاصلة"></label>
-          <label class="full">ملاحظات التركيب<textarea id="partNotes" rows="2" placeholder="ملاحظات اختيارية"></textarea></label>
-        </div>
-        <div class="form-actions"><button class="primary-btn" type="submit">حفظ القطعة</button><button id="cancelEdit" class="secondary-btn hidden" type="button">إلغاء التعديل</button></div>
-      </form>
-      <div class="divider"></div>
-      <div class="section-heading"><div><span class="eyebrow">إدارة الحسابات</span><h2>إنشاء حساب موظف</h2><p class="muted">لا يوجد تسجيل ذاتي؛ المدير وحده ينشئ الحسابات.</p></div></div>
-      <form id="employeeForm">
-        <div class="form-grid">
-          <label>اسم الموظف<input id="employeeName" required placeholder="اسم الموظف"></label>
-          <label>البريد الإلكتروني<input id="employeeEmail" type="email" required placeholder="employee@example.com"></label>
-          <label class="full">كلمة المرور المؤقتة<input id="employeePassword" type="password" minlength="8" required placeholder="8 أحرف على الأقل"></label>
-        </div>
-        <button class="primary-btn" type="submit">إنشاء حساب الموظف</button>
-        <p id="employeeMessage" class="muted"></p>
-      </form>
-    </section>
-  </section>
-</main>
-<footer>رقميات © <span id="year"></span> • تأكد من رقم القطعة وشكل الفلاتة قبل التركيب.</footer>
-<div id="toast" class="toast"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js"></script>
-<script src="app.js"></script>
-</body>
-</html>
+<section id="loginView" class="login-wrap"><div class="login-card"><img class="login-logo" src="logo-raqmiat.png" alt="شعار رقميات"><span class="eyebrow">نظام رقميات للصيانة</span><h1>أهلاً بك في رقميات</h1><p class="muted">سجّل الدخول للبحث عن القطع البديلة المتوافقة أو لإدارة قاعدة البيانات.</p><form id="loginForm"><label>البريد الإلكتروني<input id="loginEmail" type="email" autocomplete="username" required placeholder="name@example.com"></label><label>كلمة المرور<input id="loginPassword" type="password" autocomplete="current-password" required placeholder="كلمة المرور"></label><button class="primary-btn block" type="submit">تسجيل الدخول</button><p id="loginError" class="error" role="alert"></p></form></div></section>
+<section id="appView" class="hidden">
+<section class="hero"><div><span class="eyebrow">دليل فني الصيانة</span><h1>اعثر على البديل<br><em>المتوافق قبل التركيب</em></h1><p>ابحث عن موديل الجهاز أو الشاشة الأصلية أو كود القطعة، واعرف البديل المسجّل لها.</p></div><div class="hero-mark">ر</div></section>
+<section class="panel search-panel"><div class="section-heading"><div><span class="eyebrow">بحث سريع</span><h2>ما القطعة التي تبحث عن بديل لها؟</h2><p class="muted">اكتب موديل الهاتف أو اسم/كود الشاشة أو الزقة.</p></div></div><div class="search-wrap"><span>⌕</span><input id="searchInput" type="search" placeholder="مثال: Samsung A12 أو A125 أو كود الزقة..."><button id="clearSearch" class="secondary-btn" type="button">مسح</button></div><div class="filters"><button class="filter active" data-filter="all">الكل</button><button class="filter" data-filter="screen">الشاشات</button><button class="filter" data-filter="protector">الزقات</button></div><div id="resultsMeta" class="results-meta">جاري تحميل البيانات...</div><div id="results" class="results"><div class="empty">سجّل الدخول لعرض القطع.</div></div></section>
+<section class="stats"><div class="stat panel"><span class="stat-icon">▣</span><div><b id="deviceCount">0</b><small>موديلات أجهزة</small></div></div><div class="stat panel"><span class="stat-icon">▤</span><div><b id="screenCount">0</b><small>قطع مسجلة</small></div></div><div class="stat panel"><span class="stat-icon">↔</span><div><b id="compatCount">0</b><small>علاقات توافق</small></div></div></section>
+<section id="adminPanel" class="panel admin-panel hidden"><div class="section-heading"><div><span class="eyebrow">صلاحيات المدير</span><h2>إدارة القطع</h2><p class="muted">أدخل القطعة المطلوبة والبديل المتوافق معها بشكل منفصل.</p></div></div>
+<form id="partForm"><input id="partId" type="hidden"><div class="form-grid">
+<label>نوع القطعة<select id="partType"><option value="screen">شاشة</option><option value="protector">زقة / حماية</option></select></label>
+<label>الشركة / الماركة<input id="partBrand" placeholder="Samsung / Xiaomi..."></label>
+<label class="full">موديل الجهاز أو القطعة الأصلية<input id="originalModel" required placeholder="مثال: Samsung A12 / الشاشة الأصلية A125"></label>
+<label>اسم البديل المتوافق<input id="replacementName" required placeholder="مثال: شاشة بديلة A12"></label>
+<label>كود البديل<input id="replacementCode" placeholder="مثال: A125- compatible"></label>
+<label class="full">موديلات الأجهزة المتوافقة (افصل بينها بفاصلة)<input id="partDevices" placeholder="Samsung A12, Samsung A125"></label>
+<label class="full">ملاحظات التركيب<textarea id="partNotes" rows="2" placeholder="ملاحظات اختيارية"></textarea></label></div><div class="form-actions"><button class="primary-btn" type="submit">حفظ القطعة والبديل</button><button id="cancelEdit" class="secondary-btn hidden" type="button">إلغاء التعديل</button></div></form>
+<div class="divider"></div><div class="section-heading"><div><span class="eyebrow">إدارة الحسابات</span><h2>إنشاء حساب موظف</h2><p class="muted">المدير وحده يستطيع إنشاء الحسابات.</p></div></div><form id="employeeForm"><div class="form-grid"><label>اسم الموظف<input id="employeeName" required placeholder="اسم الموظف"></label><label>البريد الإلكتروني<input id="employeeEmail" type="email" required placeholder="employee@example.com"></label><label class="full">كلمة المرور المؤقتة<input id="employeePassword" type="password" minlength="8" required placeholder="8 أحرف على الأقل"></label></div><button class="primary-btn" type="submit">إنشاء حساب الموظف</button><p id="employeeMessage" class="muted"></p></form></section>
+</section></main><footer>رقميات © <span id="year"></span> • تأكد من شكل الفلاتة ورقم القطعة قبل التركيب.</footer><div id="toast" class="toast" role="status"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="app.js"></script>
+</body></html>
