@@ -1,14 +1,6 @@
--- شغّل هذا التحديث مرة واحدة من Supabase SQL Editor قبل استخدام النسخة الجديدة.
--- يضيف حقولاً مستقلة للقطعة الأصلية والبديل، ويحافظ على البيانات القديمة.
-alter table public.parts add column if not exists original_model text;
-alter table public.parts add column if not exists replacement_name text;
-alter table public.parts add column if not exists replacement_code text;
-
--- ترحيل السجلات القديمة: الاسم القديم يُستخدم مؤقتاً كاسم بديل.
-update public.parts
-set replacement_name = coalesce(nullif(replacement_name, ''), name),
-    original_model = coalesce(nullif(original_model, ''), name)
-where replacement_name is null or original_model is null;
-
--- لا تغيّر سياسات RLS الحالية. تأكد أن سياسات القراءة تسمح للمستخدم المسجل
--- وسياسات الإضافة والتعديل والحذف تسمح للمدير فقط.
+-- نفّذ هذا الملف مرة واحدة في Supabase SQL Editor قبل رفع النسخة الجديدة.
+-- يضيف حقول المجموعات دون حذف أو تعديل السجلات القديمة.
+alter table public.parts add column if not exists compatibility_group_id text;
+alter table public.parts add column if not exists group_name text;
+create index if not exists parts_compatibility_group_id_idx on public.parts (compatibility_group_id);
+-- أبقِ سياسات RLS الحالية: قراءة للمستخدم المسجل، وتعديل/إضافة/حذف للمدير فقط.
